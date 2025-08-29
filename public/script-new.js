@@ -291,17 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Checkout via WhatsApp
+    // Checkout - agora redireciona para página de checkout
     const checkoutBtn = document.querySelector("#checkout");
     if (checkoutBtn) {
         checkoutBtn.addEventListener("click", () => {
             if (!cart.length) return alert("Seu carrinho está vazio.");
             
-            const phone = window.CONFIG.WHATSAPP_PHONE || "5511999999999";
-            const itemsList = cart.map(i => `• ${i.name} (Tam ${i.size}) x${i.qty} = ${currency(i.price * i.qty)}`).join("%0A");
-            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            const msg = `Olá! Quero finalizar a compra:%0A${itemsList}%0A%0ATotal: ${currency(total)}%0A%0AForma de pagamento: Pix/Cartão`;
-            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            // Redirecionar para página de checkout
+            window.location.href = '/public/checkout.html';
         });
     }
 

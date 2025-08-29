@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pagamento PIX - Circulô Brechó</title>
+  <meta name="description" content="Complete seu pagamento via PIX">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/styles.css">
+  
+  <style>
+    .pix-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .pix-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid #e8dec9;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+    }
+    
+    .pix-header {
+      margin-bottom: 32px;
+    }
+    
+    .pix-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .order-info {
+      background: #f6efdf;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 24px 0;
+    }
+    
+    .qr-code-container {
+      margin: 32px 0;
+      padding: 20px;
+      border: 2px dashed #e8dec9;
+      border-radius: 12px;
+    }
+    
+    .qr-code-placeholder {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 48px;
+    }
+    
+    .pix-code-container {
+      margin: 24px 0;
+    }
+    
+    .pix-code {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      margin: 12px 0;
+      border: 1px solid #ddd;
+    }
+    
+    .copy-button {
+      background: var(--brand-dark);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .copy-button:hover {
+      background: #1e2d33;
+    }
+    
+    .copy-button.copied {
+      background: var(--success, #28a745);
+    }
+    
+    .payment-timer {
+      background: #fff3cd;
+      color: #856404;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 24px 0;
+      border: 1px solid #ffeaa7;
+    }
+    
+    .timer-display {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 8px 0;
+    }
+    
+    .payment-instructions {
+      text-align: left;
+      margin: 24px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+    
+    .instructions-list {
+      margin: 16px 0;
+      padding-left: 20px;
+    }
+    
+    .instructions-list li {
+      margin: 8px 0;
+      color: #666;
+    }
+    
+    .back-to-store {
+      margin-top: 32px;
+    }
+    
+    .status-checking {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: #666;
+    }
+    
+    .spinner {
+      font-size: 20px;
+      animation: spin 2s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      .pix-container {
+        padding: 16px;
+        margin: 20px auto;
+      }
+      
+      .pix-card {
+        padding: 24px;
+      }
+      
+      .qr-code-placeholder {
+        width: 150px;
+        height: 150px;
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/public/index.html">
+        <img src="/public/assets/logo.png" alt="Circulô Brechó logo" />
+        <div>
+          <div class="title">circulô</div>
+          <div class="subtitle">brechó feminino</div>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <div class="pix-container">
+    <div class="pix-card">
+      <div class="pix-header">
+        <div class="pix-icon">🏦</div>
+        <h1>Pagamento via PIX</h1>
+        <p>Escaneie o QR Code ou copie o código PIX para finalizar seu pedido</p>
+      </div>
+
+      <div class="order-info">
+        <h3>Pedido #<span id="orderNumber">---</span></h3>
+        <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+          <span>Total a pagar:</span>
+          <strong id="orderTotal" style="font-size: 24px; color: var(--brand-dark);">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="payment-timer">
+        <div>⏰ <strong>Tempo para pagamento:</strong></div>
+        <div class="timer-display" id="paymentTimer">30:00</div>
+        <div>O PIX expira automaticamente após este tempo</div>
+      </div>
+
+      <div class="qr-code-container">
+        <div class="qr-code-placeholder" id="qrCodePlaceholder">
+          📱
+        </div>
+        <p><strong>Escaneie com o app do seu banco</strong></p>
+      </div>
+
+      <div class="pix-code-container">
+        <p><strong>Ou copie o código PIX:</strong></p>
+        <div class="pix-code" id="pixCode">
+          Carregando código PIX...
+        </div>
+        <button class="copy-button" id="copyButton" onclick="copyPixCode()">
+          📋 Copiar Código PIX
+        </button>
+      </div>
+
+      <div class="payment-instructions">
+        <h4>📝 Como pagar:</h4>
+        <ol class="instructions-list">
+          <li>Abra o app do seu banco ou instituição financeira</li>
+          <li>Procure pela opção <strong>PIX</strong></li>
+          <li>Escolha <strong>Pagar com QR Code</strong> ou <strong>PIX Copia e Cola</strong></li>
+          <li>Escaneie o código acima ou cole o código PIX</li>
+          <li>Confirme os dados e finalize o pagamento</li>
+        </ol>
+      </div>
+
+      <div class="status-checking" id="statusCheck">
+        <div class="spinner">⏳</div>
+        <span>Aguardando confirmação do pagamento...</span>
+      </div>
+
+      <div class="back-to-store">
+        <a href="/public/index.html" class="btn btn-outline">
+          ← Voltar à Loja
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <!-- Configurações -->
+  <script src="/config.js"></script>
+  
+  <script>
+    // Inicialização
+    let app, db;
+    let orderId = null;
+    let paymentTimer = 30 * 60; // 30 minutos em segundos
+    let timerInterval = null;
+    let statusCheckInterval = null;
+
+    // Inicializar Firebase
+    function initializeFirebase() {
+      try {
+        app = firebase.initializeApp(window.CONFIG.FIREBASE_CONFIG);
+        db = firebase.firestore();
+      } catch (error) {
+        console.error('Erro ao inicializar Firebase:', error);
+      }
+    }
+
+    // Função utilitária para formatação de moeda
+    function currency(v) { 
+      return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); 
+    }
+
+    // Carregar dados do pagamento PIX
+    function loadPaymentData() {
+      // Pegar order ID da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      orderId = urlParams.get('order');
+      
+      if (!orderId) {
+        alert('Pedido não encontrado!');
+        window.location.href = '/public/index.html';
+        return;
+      }
+
+      // Carregar dados do PIX do localStorage (temporário)
+      const pixData = JSON.parse(localStorage.getItem('currentPIXPayment') || '{}');
+      
+      if (pixData.orderId !== orderId) {
+        alert('Dados do pagamento não encontrados!');
+        window.location.href = '/public/index.html';
+        return;
+      }
+
+      // Preencher interface
+      document.getElementById('orderNumber').textContent = orderId.slice(-8).toUpperCase();
+      document.getElementById('orderTotal').textContent = currency(pixData.amount);
+      document.getElementById('pixCode').textContent = pixData.pixCode;
+
+      // Iniciar timer
+      startPaymentTimer();
+      
+      // Iniciar verificação de status
+      startStatusCheck();
+    }
+
+    // Copiar código PIX
+    function copyPixCode() {
+      const pixCode = document.getElementById('pixCode').textContent;
+      const copyButton = document.getElementById('copyButton');
+      
+      navigator.clipboard.writeText(pixCode).then(() => {
+        copyButton.textContent = '✅ Copiado!';
+        copyButton.classList.add('copied');
+        
+        setTimeout(() => {
+          copyButton.textContent = '📋 Copiar Código PIX';
+          copyButton.classList.remove('copied');
+        }, 3000);
+      }).catch(err => {
+        console.error('Erro ao copiar:', err);
+        alert('Erro ao copiar código. Tente selecionar e copiar manualmente.');
+      });
+    }
+
+    // Timer do pagamento
+    function startPaymentTimer() {
+      timerInterval = setInterval(() => {
+        const minutes = Math.floor(paymentTimer / 60);
+        const seconds = paymentTimer % 60;
+        
+        document.getElementById('paymentTimer').textContent = 
+          `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        paymentTimer--;
+        
+        if (paymentTimer < 0) {
+          clearInterval(timerInterval);
+          handlePaymentTimeout();
+        }
+      }, 1000);
+    }
+
+    // Timeout do pagamento
+    function handlePaymentTimeout() {
+      document.getElementById('paymentTimer').textContent = '00:00';
+      document.getElementById('statusCheck').innerHTML = `
+        <div style="color: #dc3545;">
+          ⏰ <strong>PIX expirado!</strong> Faça um novo pedido para continuar.
+        </div>
+      `;
+      
+      // Limpar verificação de status
+      if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+      }
+    }
+
+    // Verificação de status do pagamento
+    function startStatusCheck() {
+      statusCheckInterval = setInterval(async () => {
+        try {
+          // Verificar status no Firestore
+          const orderDoc = await db.collection('orders').doc(orderId).get();
+          
+          if (orderDoc.exists) {
+            const orderData = orderDoc.data();
+            
+            if (orderData.payment && orderData.payment.status === 'paid') {
+              handlePaymentSuccess();
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao verificar status:', error);
+        }
+      }, 5000); // Verificar a cada 5 segundos
+    }
+
+    // Pagamento aprovado
+    function handlePaymentSuccess() {
+      // Parar timers
+      if (timerInterval) clearInterval(timerInterval);
+      if (statusCheckInterval) clearInterval(statusCheckInterval);
+      
+      // Atualizar interface
+      document.getElementById('statusCheck').innerHTML = `
+        <div style="color: #28a745; font-size: 18px;">
+          ✅ <strong>Pagamento confirmado!</strong>
+        </div>
+      `;
+      
+      // Limpar dados temporários
+      localStorage.removeItem('currentPIXPayment');
+      
+      // Redirecionar para página de sucesso após 3 segundos
+      setTimeout(() => {
+        window.location.href = `/public/order-success.html?order=${orderId}`;
+      }, 3000);
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeFirebase();
+      loadPaymentData();
+    });
+
+    // Função global para copiar
+    window.copyPixCode = copyPixCode;
+  </script>
+</body>
+</html>

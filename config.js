@@ -57,8 +57,34 @@ const CONFIG = {
   },
 
   // === CONFIGURAÇÕES DA API ===
-  // Será preenchido quando configurarmos as Cloud Functions
-  API_BASE_URL: '', // 'https://sua-regiao-seu-projeto.cloudfunctions.net/api'
+  API_BASE_URL: '', // Será preenchido quando configurarmos as Cloud Functions
+  
+  // === MERCADO PAGO ===
+  // IMPORTANTE: Estas são credenciais de TESTE (sandbox)
+  // Substitua pelas credenciais de PRODUÇÃO quando for ao ar
+  MERCADO_PAGO: {
+    // Credenciais de teste - você precisará criar conta no Mercado Pago
+    PUBLIC_KEY: 'TEST-your-public-key-here', // Substituir pela sua chave pública de teste
+    ACCESS_TOKEN: 'TEST-your-access-token-here', // Substituir pelo seu access token de teste
+    SANDBOX: true // true = teste, false = produção
+  },
+  
+  // === CONFIGURAÇÕES DE EMAIL ===
+  EMAIL: {
+    FROM_NAME: 'Circulô Brechó',
+    FROM_EMAIL: 'noreply@circulobrecho.com',
+    REPLY_TO: 'contato@circulobrecho.com'
+  },
+  
+  // === STATUS DOS PEDIDOS ===
+  ORDER_STATUS: {
+    'pending': 'Aguardando Pagamento',
+    'paid': 'Pago - Preparando Envio', 
+    'processing': 'Preparando Envio',
+    'shipped': 'Enviado',
+    'delivered': 'Entregue',
+    'cancelled': 'Cancelado'
+  }
 
   // === CONFIGURAÇÕES DE UPLOAD ===
   MAX_IMAGES_PER_PRODUCT: 5,

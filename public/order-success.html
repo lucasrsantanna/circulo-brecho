@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pedido Confirmado - Circulô Brechó</title>
+  <meta name="description" content="Seu pedido foi confirmado com sucesso">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/styles.css">
+  
+  <style>
+    .success-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .success-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid #e8dec9;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+    }
+    
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: bounce 2s ease-in-out;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 60%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      80% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    .success-title {
+      color: var(--success, #28a745);
+      margin-bottom: 16px;
+      font-size: 32px;
+      font-weight: 800;
+    }
+    
+    .success-subtitle {
+      color: #666;
+      margin-bottom: 32px;
+      font-size: 18px;
+    }
+    
+    .order-details {
+      background: #f6efdf;
+      padding: 24px;
+      border-radius: 12px;
+      margin: 32px 0;
+      text-align: left;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e8dec9;
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+      font-weight: 600;
+      font-size: 18px;
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 2px solid #dca53a;
+    }
+    
+    .tracking-info {
+      background: #d4edda;
+      color: #155724;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 24px 0;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .tracking-number {
+      font-family: monospace;
+      font-size: 20px;
+      font-weight: 800;
+      margin: 8px 0;
+      letter-spacing: 2px;
+    }
+    
+    .next-steps {
+      background: #f8f9fa;
+      padding: 24px;
+      border-radius: 12px;
+      margin: 32px 0;
+      text-align: left;
+    }
+    
+    .steps-list {
+      margin: 16px 0;
+      padding-left: 20px;
+    }
+    
+    .steps-list li {
+      margin: 12px 0;
+      color: #666;
+    }
+    
+    .email-info {
+      background: #cce5ff;
+      color: #004085;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 24px 0;
+      border: 1px solid #b8daff;
+    }
+    
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 32px 0;
+    }
+    
+    .btn-whatsapp {
+      background: #25d366;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-whatsapp:hover {
+      background: #1ebe57;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .social-share {
+      margin: 32px 0;
+      padding: 24px;
+      border: 1px solid #e8dec9;
+      border-radius: 12px;
+    }
+    
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .share-btn {
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .share-instagram {
+      background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+      color: white;
+    }
+    
+    .share-whatsapp {
+      background: #25d366;
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .success-container {
+        padding: 16px;
+        margin: 20px auto;
+      }
+      
+      .success-card {
+        padding: 24px;
+      }
+      
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+      
+      .share-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/public/index.html">
+        <img src="/public/assets/logo.png" alt="Circulô Brechó logo" />
+        <div>
+          <div class="title">circulô</div>
+          <div class="subtitle">brechó feminino</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="success-container">
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      
+      <h1 class="success-title">Pedido Confirmado!</h1>
+      <p class="success-subtitle">
+        Obrigada por escolher o Circulô Brechó! Seu pedido foi processado com sucesso.
+      </p>
+
+      <div class="order-details">
+        <h3 style="margin: 0 0 16px; color: var(--brand-dark);">📦 Detalhes do Pedido</h3>
+        
+        <div class="detail-row">
+          <span>Pedido:</span>
+          <strong>#<span id="orderNumber">---</span></strong>
+        </div>
+        
+        <div class="detail-row">
+          <span>Data:</span>
+          <span id="orderDate">---</span>
+        </div>
+        
+        <div class="detail-row">
+          <span>Método de Pagamento:</span>
+          <span id="paymentMethod">PIX</span>
+        </div>
+        
+        <div class="detail-row">
+          <span>Status:</span>
+          <span style="color: var(--success, #28a745);">✅ Pago</span>
+        </div>
+        
+        <div class="detail-row">
+          <span>Total Pago:</span>
+          <strong id="orderTotal">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="tracking-info">
+        <h4 style="margin: 0 0 12px;">📍 Número de Acompanhamento</h4>
+        <div class="tracking-number" id="trackingNumber">CB12345678</div>
+        <p style="margin: 12px 0 0; font-size: 14px;">
+          Use este número para acompanhar seu pedido via WhatsApp ou email
+        </p>
+      </div>
+
+      <div class="email-info">
+        <h4 style="margin: 0 0 12px;">📧 Confirmação por Email</h4>
+        <p style="margin: 0;">
+          Enviamos todos os detalhes do seu pedido para <strong id="customerEmail">email@exemplo.com</strong>
+        </p>
+        <p style="margin: 8px 0 0; font-size: 14px;">
+          Verifique também sua caixa de spam/lixo eletrônico
+        </p>
+      </div>
+
+      <div class="next-steps">
+        <h4 style="margin: 0 0 16px; color: var(--brand-dark);">🚀 Próximos Passos</h4>
+        <ol class="steps-list">
+          <li><strong>Preparação:</strong> Vamos separar e embalar suas peças com muito carinho</li>
+          <li><strong>Envio:</strong> Seu pedido será enviado em até 2 dias úteis</li>
+          <li><strong>Rastreamento:</strong> Você receberá o código de rastreio por email</li>
+          <li><strong>Entrega:</strong> Receba em casa em até 7 dias úteis</li>
+        </ol>
+      </div>
+
+      <div class="action-buttons">
+        <a href="#" class="btn btn-whatsapp" id="whatsappSupport">
+          💬 Falar no WhatsApp
+        </a>
+        <a href="/public/index.html" class="btn btn-outline">
+          🛍️ Continuar Comprando
+        </a>
+      </div>
+
+      <div class="social-share">
+        <h4 style="margin: 0 0 8px;">💚 Compartilhe sua Compra Sustentável</h4>
+        <p style="margin: 0 0 16px; color: #666; font-size: 14px;">
+          Mostre para suas amigas como é fácil encontrar peças incríveis no brechó!
+        </p>
+        <div class="share-buttons">
+          <a href="#" class="share-btn share-instagram" id="shareInstagram">
+            📷 Stories do Instagram
+          </a>
+          <a href="#" class="share-btn share-whatsapp" id="shareWhatsApp">
+            💬 Compartilhar no WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px; padding: 20px; border-top: 1px solid #e8dec9; color: #666; font-size: 14px;">
+        <p>🌱 <strong>Obrigada por escolher moda sustentável!</strong></p>
+        <p>Cada compra no Circulô Brechó é um passo rumo a um futuro mais consciente e estiloso.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <!-- Configurações -->
+  <script src="/config.js"></script>
+  
+  <script>
+    // Inicialização
+    let app, db;
+    let orderId = null;
+
+    // Inicializar Firebase
+    function initializeFirebase() {
+      try {
+        app = firebase.initializeApp(window.CONFIG.FIREBASE_CONFIG);
+        db = firebase.firestore();
+      } catch (error) {
+        console.error('Erro ao inicializar Firebase:', error);
+      }
+    }
+
+    // Função utilitária para formatação de moeda
+    function currency(v) { 
+      return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); 
+    }
+
+    // Carregar dados do pedido
+    async function loadOrderData() {
+      // Pegar order ID da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      orderId = urlParams.get('order');
+      
+      if (!orderId) {
+        alert('Pedido não encontrado!');
+        window.location.href = '/public/index.html';
+        return;
+      }
+
+      try {
+        // Buscar dados do pedido no Firestore
+        const orderDoc = await db.collection('orders').doc(orderId).get();
+        
+        if (!orderDoc.exists) {
+          alert('Pedido não encontrado!');
+          window.location.href = '/public/index.html';
+          return;
+        }
+
+        const orderData = orderDoc.data();
+        
+        // Preencher interface
+        document.getElementById('orderNumber').textContent = orderId.slice(-8).toUpperCase();
+        document.getElementById('orderTotal').textContent = currency(orderData.payment.total);
+        document.getElementById('customerEmail').textContent = orderData.customer.email;
+        document.getElementById('trackingNumber').textContent = orderData.trackingNumber || 'CB' + orderId.slice(-8);
+        
+        // Data do pedido
+        const orderDate = orderData.createdAt?.toDate() || new Date();
+        document.getElementById('orderDate').textContent = orderDate.toLocaleDateString('pt-BR');
+        
+        // Método de pagamento
+        const paymentMethod = orderData.payment.method === 'pix' ? 'PIX' : 'Cartão de Crédito';
+        document.getElementById('paymentMethod').textContent = paymentMethod;
+        
+        // Configurar links
+        setupActionLinks(orderData);
+        
+      } catch (error) {
+        console.error('Erro ao carregar dados do pedido:', error);
+        alert('Erro ao carregar dados do pedido.');
+      }
+    }
+
+    // Configurar links de ação
+    function setupActionLinks(orderData) {
+      const phone = window.CONFIG.WHATSAPP_PHONE || "5511999999999";
+      const trackingNumber = orderData.trackingNumber || 'CB' + orderId.slice(-8);
+      
+      // WhatsApp suporte
+      const whatsappSupport = document.getElementById('whatsappSupport');
+      const supportMessage = `Olá! Fiz um pedido no Circulô Brechó (${trackingNumber}) e gostaria de acompanhar o status. Obrigada!`;
+      whatsappSupport.href = `https://wa.me/${phone}?text=${encodeURIComponent(supportMessage)}`;
+      
+      // Compartilhar no WhatsApp
+      const shareWhatsApp = document.getElementById('shareWhatsApp');
+      const shareMessage = `🛍️ Acabei de fazer uma compra incrível no Circulô Brechó! Moda sustentável e com estilo 💚✨ Confira: ${window.location.origin}/public/index.html`;
+      shareWhatsApp.href = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+      
+      // Instagram (abrir app se possível)
+      const shareInstagram = document.getElementById('shareInstagram');
+      shareInstagram.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Tentar abrir o app do Instagram
+        const instagramUrl = 'instagram://camera';
+        const fallbackUrl = 'https://instagram.com/';
+        
+        // Criar link temporário
+        const link = document.createElement('a');
+        link.href = instagramUrl;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Fallback se não conseguir abrir o app
+        setTimeout(() => {
+          if (confirm('Não conseguimos abrir o Instagram. Deseja abrir no navegador?')) {
+            window.open(fallbackUrl, '_blank');
+          }
+        }, 1000);
+      });
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeFirebase();
+      loadOrderData();
+    });
+  </script>
+</body>
+</html>
