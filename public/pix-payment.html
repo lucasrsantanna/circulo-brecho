@@ -288,17 +288,32 @@
       orderId = urlParams.get('order');
       
       if (!orderId) {
-        alert('Pedido não encontrado!');
+        alert('Pedido não encontrado na URL!');
         window.location.href = '/public/index.html';
         return;
       }
 
+      console.log('Order ID da URL:', orderId);
+
       // Carregar dados do PIX do localStorage (temporário)
-      const pixData = JSON.parse(localStorage.getItem('currentPIXPayment') || '{}');
+      const pixDataStr = localStorage.getItem('currentPIXPayment');
+      console.log('Dados PIX localStorage:', pixDataStr);
+      
+      if (!pixDataStr) {
+        // Se não tem dados no localStorage, criar dados básicos para teste
+        console.log('Criando dados PIX básicos para teste...');
+        
+        // Buscar dados do pedido no Firestore
+        loadOrderFromFirestore(orderId);
+        return;
+      }
+      
+      const pixData = JSON.parse(pixDataStr);
       
       if (pixData.orderId !== orderId) {
-        alert('Dados do pagamento não encontrados!');
-        window.location.href = '/public/index.html';
+        console.log('ID não confere - localStorage:', pixData.orderId, 'URL:', orderId);
+        // Tentar buscar no Firestore mesmo assim
+        loadOrderFromFirestore(orderId);
         return;
       }
 
@@ -406,6 +421,67 @@
       setTimeout(() => {
         window.location.href = `/public/order-success.html?order=${orderId}`;
       }, 3000);
+    }
+
+    // Carregar pedido diretamente do Firestore
+    async function loadOrderFromFirestore(orderId) {
+      try {
+        console.log('Buscando pedido no Firestore:', orderId);
+        
+        const orderDoc = await db.collection('orders').doc(orderId).get();
+        
+        if (!orderDoc.exists) {
+          alert('Pedido não encontrado no sistema!');
+          window.location.href = '/public/index.html';
+          return;
+        }
+
+        const orderData = orderDoc.data();
+        console.log('Dados do pedido encontrados:', orderData);
+        
+        // Criar dados PIX básicos
+        const pixData = {
+          orderId: orderId,
+          amount: orderData.payment.total || 0,
+          pixCode: generateBasicPIXCode(orderData.payment.total || 0, orderId),
+          qrCodeUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+        };
+        
+        // Preencher interface
+        document.getElementById('orderNumber').textContent = orderId.slice(-8).toUpperCase();
+        document.getElementById('orderTotal').textContent = currency(pixData.amount);
+        document.getElementById('pixCode').textContent = pixData.pixCode;
+
+        // Iniciar timer
+        startPaymentTimer();
+        
+        // Iniciar verificação de status  
+        startStatusCheck();
+        
+      } catch (error) {
+        console.error('Erro ao carregar pedido:', error);
+        alert('Erro ao carregar dados do pedido: ' + error.message);
+      }
+    }
+
+    // Gerar código PIX básico
+    function generateBasicPIXCode(amount, orderId) {
+      const merchantName = 'CIRCULO BRECHO';
+      const merchantCity = 'SAO PAULO';
+      const txid = orderId.slice(-8).toUpperCase();
+      const amountStr = amount.toFixed(2);
+      
+      let pixCode = '00020126580014BR.GOV.BCB.PIX0136' + (window.CONFIG?.WHATSAPP_PHONE || '5511914813028');
+      pixCode += '020400005303986';
+      pixCode += '54' + String(amountStr.length).padStart(2, '0') + amountStr;
+      pixCode += '5802BR59' + String(merchantName.length).padStart(2, '0') + merchantName;
+      pixCode += '60' + String(merchantCity.length).padStart(2, '0') + merchantCity;
+      pixCode += '62140510' + txid + '6304';
+      
+      const crc = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      pixCode += crc;
+      
+      return pixCode;
     }
 
     // Inicialização
