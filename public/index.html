@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Circulô Brechó — Loja</title>
+  <meta name="description" content="Brechó feminino online. Peças únicas, moda acessível e sustentável.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="#">
+        <img src="/public/assets/logo.png" alt="Circulô Brechó logo" />
+        <div>
+          <div class="title">circulô</div>
+          <div class="subtitle">brechó feminino</div>
+        </div>
+      </a>
+      <nav class="nav">
+        <a href="#catalogo">Catálogo</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <div class="actions">
+        <button class="icon-btn" id="open-cart">🛒 Carrinho <span class="badge" id="cart-count">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <h1>Peças únicas, garimpadas com carinho</h1>
+          <p>Moda sustentável para brilhar todo dia — estoque rotativo, tamanhos variados e curadoria feminina.</p>
+          <div class="cta">
+            <a class="btn btn-primary" href="#catalogo">Ver catálogo</a>
+            <a class="btn btn-outline" target="_blank" href="https://instagram.com/">Seguir no Instagram</a>
+          </div>
+        </div>
+        <div style="background: radial-gradient(70% 70% at 50% 30%, #fff 0%, #f4efe3 100%); display:flex; align-items:center; justify-content:center;">
+          <img src="/public/assets/logo.png" alt="Circulô" style="width:140px;height:140px;border-radius:999px;border:6px solid #efe6d3">
+        </div>
+      </div>
+    </section>
+
+    <section id="catalogo">
+      <div class="toolbar">
+        <div class="search">
+          <input id="search" placeholder="Buscar por peça (ex.: vestido, jeans, blazer)">
+          <button>🔍</button>
+        </div>
+        <div class="chips">
+          <button class="chip active" data-chip="Todas">Todas</button>
+          <button class="chip" data-chip="Vestidos">Vestidos</button>
+          <button class="chip" data-chip="Blusas">Blusas</button>
+          <button class="chip" data-chip="Jeans">Jeans</button>
+          <button class="chip" data-chip="Blazers">Blazers</button>
+          <button class="chip" data-chip="Acessórios">Acessórios</button>
+        </div>
+      </div>
+
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <section id="curadoria" style="margin:32px 0">
+      <div class="storytelling-section">
+        <div class="story-content">
+          <div class="story-text">
+            <h3 class="story-title">✨ Nossa Curadoria Especial</h3>
+            <p class="story-description">
+              Cada peça do Circulô passa por nossa curadoria cuidadosa. Selecionamos apenas roupas que 
+              contam histórias bonitas e que merecem uma nova chance de brilhar no seu guarda-roupa.
+            </p>
+            <div class="story-highlights">
+              <div class="highlight-item">
+                <div class="highlight-icon">👗</div>
+                <div>
+                  <strong>Peças Únicas</strong>
+                  <span>Garimpadas com carinho</span>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">✅</div>
+                <div>
+                  <strong>Qualidade Garantida</strong>
+                  <span>Verificamos cada detalhe</span>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">💚</div>
+                <div>
+                  <strong>Preço Justo</strong>
+                  <span>Moda acessível para todas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual">
+            <div class="visual-placeholder" style="background: linear-gradient(135deg, var(--brand-coral), var(--brand-mustard));">
+              <div class="placeholder-text">
+                <div style="font-size: 48px; margin-bottom: 16px;">👸</div>
+                <div style="color: white; font-weight: 600;">Sua nova peça favorita te espera aqui!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sustentabilidade" style="margin:32px 0">
+      <div class="storytelling-section sustainability">
+        <div class="story-content">
+          <div class="story-visual">
+            <div class="visual-placeholder" style="background: linear-gradient(135deg, var(--brand-blue), var(--brand-dark));">
+              <div class="placeholder-text">
+                <div style="font-size: 48px; margin-bottom: 16px;">🌱</div>
+                <div style="color: white; font-weight: 600;">Moda Circular</div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 14px;">Cuidando do nosso planeta</div>
+              </div>
+            </div>
+          </div>
+          <div class="story-text">
+            <h3 class="story-title">🌍 Sustentabilidade é Nosso Compromisso</h3>
+            <p class="story-description">
+              Quando você compra no Circulô, está fazendo parte de um movimento maior. Cada peça reutilizada 
+              é uma peça a menos no lixo e um passo a mais rumo a um futuro mais sustentável.
+            </p>
+            <div class="impact-stats">
+              <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Peças que ganharam nova vida</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">200+</div>
+                <div class="stat-label">Clientes felizes e estilosas</div>
+              </div>
+            </div>
+            <a href="#catalogo" class="btn btn-primary">Fazer Parte do Movimento</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dicas" style="margin:32px 0">
+      <div class="card" style="padding:24px">
+        <h3 style="margin:0 0 20px; text-align:center">💡 Dicas para Arrasar no Brechó</h3>
+        <div class="tips-grid">
+          <div class="tip-card">
+            <div class="tip-icon">✨</div>
+            <h4>Misture Estilos</h4>
+            <p>Combine peças vintage com modernas para criar looks únicos e cheios de personalidade.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🧽</div>
+            <h4>Cuidados Especiais</h4>
+            <p>Peças de brechó merecem carinho extra. Lave com cuidado e guarde adequadamente.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">👗</div>
+            <h4>Aposte em Clássicos</h4>
+            <p>Blazers, jeans e vestidos básicos nunca saem de moda e são investimentos certeiros.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="instagram" style="margin:28px 0">
+      <div class="card" style="padding:16px">
+        <h3 style="margin:0 0 16px; text-align:center">✨ Nos siga no Instagram</h3>
+        <p style="margin:0 0 20px; color:#5d696e; text-align:center">Veja os looks incríveis que nossas clientes criam e fique por dentro das novidades!</p>
+        
+        <div class="instagram-grid" id="instagramGrid">
+          <!-- Posts serão carregados aqui -->
+          <div class="insta-post" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);">
+            <div class="insta-placeholder">
+              <div style="font-size: 32px; color: white; margin-bottom: 8px;">📷</div>
+              <div style="color: white; font-size: 14px; font-weight: 600;">@circulo.brecho</div>
+              <div style="color: rgba(255,255,255,0.8); font-size: 12px;">Siga para ver nossos looks!</div>
+            </div>
+          </div>
+          <div class="insta-post" style="background: var(--brand-coral);">
+            <div class="insta-placeholder">
+              <div style="font-size: 24px; color: white; margin-bottom: 8px;">✨</div>
+              <div style="color: white; font-size: 12px; text-align: center;">Peças únicas, garimpos especiais</div>
+            </div>
+          </div>
+          <div class="insta-post" style="background: var(--brand-mustard);">
+            <div class="insta-placeholder">
+              <div style="font-size: 24px; color: white; margin-bottom: 8px;">🌱</div>
+              <div style="color: white; font-size: 12px; text-align: center;">Moda sustentável e consciente</div>
+            </div>
+          </div>
+          <div class="insta-post" style="background: var(--brand-blue);">
+            <div class="insta-placeholder">
+              <div style="font-size: 24px; color: white; margin-bottom: 8px;">💚</div>
+              <div style="color: white; font-size: 12px; text-align: center;">Cada compra é um ato de amor ao planeta</div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 16px;">
+          <a class="btn btn-primary" target="_blank" href="https://instagram.com/" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border: none;">
+            📷 Seguir no Instagram
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contato">
+      <div class="card" style="padding:16px">
+        <h3 style="margin:0 0 6px">Fale com a gente</h3>
+        <p class="small">Dúvidas, trocas e novidades: nos chame no WhatsApp ou acompanhe o Instagram.</p>
+        <div class="socials" style="margin-top:8px">
+          <a class="soc" target="_blank" href="https://wa.me/5511914813028">💬 WhatsApp</a>
+          <a class="soc" target="_blank" href="https://instagram.com/">📷 Instagram</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <div class="foot">
+      <small>© <span id="year"></span> Circulô Brechó • Política de Troca • Pix & Cartão</small>
+      <div class="socials">
+        <a class="soc" target="_blank" href="https://instagram.com/">IG</a>
+        <a class="soc" target="_blank" href="https://wa.me/55SEU_NUMERO_AQUI">WA</a>
+      </div>
+    </div>
+  </footer>
+
+  <aside class="cart-drawer" id="cart" aria-hidden="true">
+    <div class="cart-header">
+      <strong>Seu carrinho</strong>
+      <button id="close-cart">✕</button>
+    </div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="total"><span>Total</span><span id="cart-total">R$ 0,00</span></div>
+      <div class="note">Checkout rápido via WhatsApp (troque o número no código por seu telefone).</div>
+      <button class="btn btn-primary" id="checkout">Finalizar no WhatsApp</button>
+      <small class="note">Sugestão de evolução: integrar Mercado Pago/Stripe, controle de estoque, tamanhos, fotos reais e avaliação por estado (A/B/C).</small>
+    </div>
+  </aside>
+
+  <!-- Modal de Produto -->
+  <div class="product-modal" id="productModal">
+    <div class="modal-overlay" onclick="closeProductModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeProductModal()">✕</button>
+      
+      <div class="modal-body">
+        <div class="modal-gallery">
+          <div class="main-image">
+            <img id="modalMainImage" src="" alt="" class="main-img">
+            <div class="image-counter" id="imageCounter">1 / 1</div>
+          </div>
+          <div class="thumbnail-nav" id="thumbnailNav">
+            <!-- Thumbnails serão inseridas aqui -->
+          </div>
+          <div class="gallery-nav">
+            <button class="nav-btn prev" onclick="prevImage()">‹</button>
+            <button class="nav-btn next" onclick="nextImage()">›</button>
+          </div>
+        </div>
+
+        <div class="modal-info">
+          <div class="product-header">
+            <div class="product-badges">
+              <span class="unique-badge" id="modalUniqueBadge" style="display: none;">✨ PEÇA ÚNICA</span>
+            </div>
+            <h2 class="product-name" id="modalProductName">Nome do Produto</h2>
+            <p class="product-brand" id="modalProductBrand">Marca</p>
+          </div>
+
+          <div class="product-price" id="modalProductPrice">R$ 0,00</div>
+
+          <div class="product-details">
+            <div class="detail-row">
+              <span class="detail-label">Tamanho:</span>
+              <span class="detail-value" id="modalProductSize">M</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Condição:</span>
+              <span class="detail-value" id="modalProductCondition">A</span>
+            </div>
+            <div class="detail-row" id="modalBrandRow">
+              <span class="detail-label">Marca:</span>
+              <span class="detail-value" id="modalProductBrandDetail">-</span>
+            </div>
+          </div>
+
+          <div class="product-description">
+            <h4>Descrição</h4>
+            <p id="modalProductDescription">Descrição do produto...</p>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-outline" id="modalWhatsappBtn">
+              💬 Perguntar no WhatsApp
+            </button>
+            <button class="btn btn-primary" id="modalAddToCartBtn">
+              🛒 Adicionar ao Carrinho
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <!-- Configurações -->
+  <script src="/config.js"></script>
+  
+  <script>document.getElementById('year').textContent = new Date().getFullYear()</script>
+  <script src="/public/script-new.js"></script>
+</body>
+</html>
