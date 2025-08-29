@@ -84,7 +84,7 @@ const CONFIG = {
     'shipped': 'Enviado',
     'delivered': 'Entregue',
     'cancelled': 'Cancelado'
-  }
+  },
 
   // === CONFIGURAÇÕES DE UPLOAD ===
   MAX_IMAGES_PER_PRODUCT: 5,
