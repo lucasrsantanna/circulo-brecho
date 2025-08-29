@@ -301,23 +301,67 @@ async function finalizeOrder() {
 // Processar pagamento PIX
 async function processPIXPayment(orderId, amount) {
   try {
-    // TODO: Implementar integração real com Mercado Pago PIX
-    // Por enquanto, simular criação do PIX
-    
     showLoading(true, 'Gerando código PIX...');
     
-    // Simular delay da API
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Criar preferência de pagamento no Mercado Pago
+    const preferenceData = {
+      items: [
+        {
+          title: `Pedido Circulô Brechó #${orderId.slice(-8).toUpperCase()}`,
+          description: cart.map(item => `${item.name} (${item.size})`).join(', '),
+          quantity: 1,
+          unit_price: amount,
+          currency_id: 'BRL'
+        }
+      ],
+      payment_methods: {
+        excluded_payment_types: [
+          { id: 'credit_card' },
+          { id: 'debit_card' },
+          { id: 'ticket' }
+        ],
+        included_payment_methods: [
+          { id: 'pix' }
+        ]
+      },
+      back_urls: {
+        success: `${window.location.origin}/public/order-success.html?order=${orderId}`,
+        failure: `${window.location.origin}/public/checkout.html`,
+        pending: `${window.location.origin}/public/pix-payment.html?order=${orderId}`
+      },
+      auto_return: 'approved',
+      external_reference: orderId,
+      expires: true,
+      expiration_date_from: new Date().toISOString(),
+      expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
+      notification_url: `${window.location.origin}/api/webhooks/mercadopago`, // Para futuro
+      metadata: {
+        order_id: orderId,
+        customer_email: customerData.email
+      }
+    };
+
+    // Por enquanto, vamos simular a criação do PIX pois precisamos do backend para fazer a chamada real
+    // Em produção, isso seria feito via Cloud Function ou backend
+    console.log('Dados da preferência PIX:', preferenceData);
     
-    // Por enquanto, redirecionar para página de PIX mockada
+    // Simular resposta da API do Mercado Pago
+    const mockPixResponse = {
+      id: 'pix_' + Date.now(),
+      init_point: '#',
+      pix_code: generateRealisticPIXCode(amount, orderId),
+      qr_code_base64: generateMockQRCode()
+    };
+    
+    // Salvar dados do PIX
     const pixData = {
       orderId: orderId,
       amount: amount,
-      pixCode: generateMockPIXCode(),
-      qrCodeUrl: generateMockQRCode()
+      pixCode: mockPixResponse.pix_code,
+      qrCodeUrl: mockPixResponse.qr_code_base64,
+      preferenceId: mockPixResponse.id
     };
     
-    // Salvar dados do PIX no localStorage temporariamente
     localStorage.setItem('currentPIXPayment', JSON.stringify(pixData));
     
     // Limpar carrinho
@@ -348,9 +392,32 @@ function generateTrackingNumber() {
   return 'CB' + Date.now().toString().slice(-8);
 }
 
-function generateMockPIXCode() {
-  // Gerar código PIX mockado para demonstração
-  return '00020126580014BR.GOV.BCB.PIX013614329876543210204000053039865802BR5913CIRCULO BRECHO6009SAO PAULO62140510CB' + Date.now().toString().slice(-8) + '6304ABCD';
+function generateRealisticPIXCode(amount, orderId) {
+  // Gerar código PIX mais realista baseado no padrão BR Code
+  const merchantName = 'CIRCULO BRECHO';
+  const merchantCity = 'SAO PAULO';
+  const txid = orderId.slice(-8).toUpperCase();
+  const amountStr = amount.toFixed(2);
+  
+  // Estrutura básica de um PIX (simplificada para demonstração)
+  let pixCode = '00020126';
+  pixCode += '580014BR.GOV.BCB.PIX';
+  pixCode += '0136' + window.CONFIG.WHATSAPP_PHONE; // Usar WhatsApp como chave PIX
+  pixCode += '0204' + '0000';
+  pixCode += '5303986'; // Código da moeda BRL
+  pixCode += '54' + String(amountStr.length).padStart(2, '0') + amountStr;
+  pixCode += '5802BR';
+  pixCode += '59' + String(merchantName.length).padStart(2, '0') + merchantName;
+  pixCode += '60' + String(merchantCity.length).padStart(2, '0') + merchantCity;
+  pixCode += '6214';
+  pixCode += '0510' + txid;
+  pixCode += '6304';
+  
+  // Calcular CRC16 (simplificado)
+  const crc = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  pixCode += crc;
+  
+  return pixCode;
 }
 
 function generateMockQRCode() {

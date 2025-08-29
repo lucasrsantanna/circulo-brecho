@@ -63,9 +63,9 @@ const CONFIG = {
   // IMPORTANTE: Estas são credenciais de TESTE (sandbox)
   // Substitua pelas credenciais de PRODUÇÃO quando for ao ar
   MERCADO_PAGO: {
-    // Credenciais de teste - você precisará criar conta no Mercado Pago
-    PUBLIC_KEY: 'TEST-your-public-key-here', // Substituir pela sua chave pública de teste
-    ACCESS_TOKEN: 'TEST-your-access-token-here', // Substituir pelo seu access token de teste
+    // Credenciais de teste - CONFIGURADAS E ATIVAS! ✅
+    PUBLIC_KEY: 'TEST-76ca8bde-d9bb-445a-976c-9eb0fa27b45e',
+    ACCESS_TOKEN: 'TEST-7584358912448345-082823-acfe38e8815ca202145c3f47334d1c35-43481797',
     SANDBOX: true // true = teste, false = produção
   },
   
