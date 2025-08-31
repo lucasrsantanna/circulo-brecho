@@ -214,6 +214,7 @@
         <div class="qr-code-placeholder" id="qrCodePlaceholder">
           📱
         </div>
+        <img id="qrCodeImage" style="display: none; max-width: 200px; border-radius: 12px;" alt="QR Code PIX">
         <p><strong>Escaneie com o app do seu banco</strong></p>
       </div>
 
@@ -421,6 +422,16 @@
         document.getElementById('orderNumber').textContent = orderId.slice(-8).toUpperCase();
         document.getElementById('orderTotal').textContent = currency(pixData.amount);
         document.getElementById('pixCode').textContent = pixData.pixCode;
+        
+        // Mostrar QR Code se disponível
+        if (pixData.qrCodeUrl && pixData.qrCodeUrl.startsWith('data:image')) {
+          const qrImage = document.getElementById('qrCodeImage');
+          const placeholder = document.getElementById('qrCodePlaceholder');
+          
+          qrImage.src = pixData.qrCodeUrl;
+          qrImage.style.display = 'block';
+          placeholder.style.display = 'none';
+        }
 
         // Iniciar timer
         startPaymentTimer();

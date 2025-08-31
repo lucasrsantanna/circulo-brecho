@@ -427,14 +427,17 @@ async function finalizeOrder() {
 // Processar pagamento PIX
 async function processPIXPayment(orderId, amount) {
   try {
-    showLoading(true, 'Gerando código PIX...');
+    showLoading(true, 'Gerando código PIX real...');
     
-    // Criar preferência de pagamento no Mercado Pago
+    const description = `Pedido Circulô Brechó #${orderId.slice(-8).toUpperCase()} - ${cart.map(item => `${item.name} (${item.size})`).join(', ')}`;
+    
+    // ATENÇÃO: Em produção real, isso deveria ser feito no backend
+    // Para demonstração, vamos usar a API diretamente (não recomendado para produção)
+    
     const preferenceData = {
       items: [
         {
-          title: `Pedido Circulô Brechó #${orderId.slice(-8).toUpperCase()}`,
-          description: cart.map(item => `${item.name} (${item.size})`).join(', '),
+          title: description,
           quantity: 1,
           unit_price: amount,
           currency_id: 'BRL'
@@ -455,37 +458,43 @@ async function processPIXPayment(orderId, amount) {
         failure: `${window.location.origin}/public/checkout.html`,
         pending: `${window.location.origin}/public/pix-payment.html?order=${orderId}`
       },
-      auto_return: 'approved',
       external_reference: orderId,
       expires: true,
       expiration_date_from: new Date().toISOString(),
-      expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
-      notification_url: `${window.location.origin}/api/webhooks/mercadopago`, // Para futuro
+      expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
       metadata: {
         order_id: orderId,
         customer_email: customerData.email
       }
     };
 
-    // Por enquanto, vamos simular a criação do PIX pois precisamos do backend para fazer a chamada real
-    // Em produção, isso seria feito via Cloud Function ou backend
-    console.log('Dados da preferência PIX:', preferenceData);
+    // Criar preferência na API do Mercado Pago
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${window.CONFIG.MERCADO_PAGO.ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(preferenceData)
+    });
     
-    // Simular resposta da API do Mercado Pago
-    const mockPixResponse = {
-      id: 'pix_' + Date.now(),
-      init_point: '#',
-      pix_code: generateRealisticPIXCode(amount, orderId),
-      qr_code_base64: generateMockQRCode()
-    };
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro da API Mercado Pago:', errorData);
+      throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+    }
     
-    // Salvar dados do PIX
+    const pixResponse = await response.json();
+    console.log('PIX criado com sucesso:', pixResponse);
+    
+    // Salvar dados do PIX no localStorage para a página de pagamento
     const pixData = {
       orderId: orderId,
       amount: amount,
-      pixCode: mockPixResponse.pix_code,
-      qrCodeUrl: mockPixResponse.qr_code_base64,
-      preferenceId: mockPixResponse.id
+      pixCode: pixResponse.point_of_interaction?.transaction_data?.qr_code || 'Código PIX não disponível',
+      qrCodeUrl: pixResponse.point_of_interaction?.transaction_data?.qr_code_base64 || null,
+      preferenceId: pixResponse.id,
+      initPoint: pixResponse.init_point
     };
     
     localStorage.setItem('currentPIXPayment', JSON.stringify(pixData));
@@ -498,7 +507,8 @@ async function processPIXPayment(orderId, amount) {
     
   } catch (error) {
     console.error('Erro ao processar PIX:', error);
-    showError('Erro ao gerar PIX. Tente novamente.');
+    showError('Erro ao gerar PIX: ' + error.message + '. Tente novamente.');
+    showLoading(false);
   }
 }
 
