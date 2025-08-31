@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Order</title>
+</head>
+<body>
+    <h1>Criando pedido de teste...</h1>
+    <div id="result"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="/config.js"></script>
+
+    <script>
+        // Inicializar Firebase
+        let app, db;
+        try {
+            app = firebase.initializeApp(window.CONFIG.FIREBASE_CONFIG);
+            db = firebase.firestore();
+        } catch (error) {
+            console.error('Erro ao inicializar Firebase:', error);
+        }
+
+        // Criar pedido de teste
+        async function createTestOrder() {
+            try {
+                const orderData = {
+                    customer: {
+                        name: "Cliente Teste",
+                        email: "teste@email.com",
+                        phone: "11999999999",
+                        address: {
+                            zipCode: "01234-567",
+                            street: "Rua Teste",
+                            number: "123",
+                            neighborhood: "Centro",
+                            city: "São Paulo",
+                            complement: ""
+                        }
+                    },
+                    items: [{
+                        productId: "test-product",
+                        name: "Produto Teste",
+                        price: 50.00,
+                        size: "M",
+                        condition: "A",
+                        qty: 1,
+                        image: null
+                    }],
+                    payment: {
+                        method: "pix",
+                        status: "pending",
+                        total: 50.00,
+                        subtotal: 50.00,
+                        shipping: 0
+                    },
+                    status: "pending",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    trackingNumber: "CB" + Date.now().toString().slice(-8)
+                };
+
+                const orderRef = await db.collection('orders').add(orderData);
+                const orderId = orderRef.id;
+                
+                document.getElementById('result').innerHTML = `
+                    <p>Pedido criado com sucesso!</p>
+                    <p>ID: ${orderId}</p>
+                    <a href="/public/pix-payment.html?order=${orderId}" target="_blank">Testar página PIX</a>
+                `;
+                
+            } catch (error) {
+                console.error('Erro ao criar pedido:', error);
+                document.getElementById('result').innerHTML = `<p>Erro: ${error.message}</p>`;
+            }
+        }
+
+        // Executar quando carregar
+        document.addEventListener('DOMContentLoaded', createTestOrder);
+    </script>
+</body>
+</html>

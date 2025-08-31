@@ -295,38 +295,8 @@
 
       console.log('Order ID da URL:', orderId);
 
-      // Carregar dados do PIX do localStorage (temporário)
-      const pixDataStr = localStorage.getItem('currentPIXPayment');
-      console.log('Dados PIX localStorage:', pixDataStr);
-      
-      if (!pixDataStr) {
-        // Se não tem dados no localStorage, criar dados básicos para teste
-        console.log('Criando dados PIX básicos para teste...');
-        
-        // Buscar dados do pedido no Firestore
-        loadOrderFromFirestore(orderId);
-        return;
-      }
-      
-      const pixData = JSON.parse(pixDataStr);
-      
-      if (pixData.orderId !== orderId) {
-        console.log('ID não confere - localStorage:', pixData.orderId, 'URL:', orderId);
-        // Tentar buscar no Firestore mesmo assim
-        loadOrderFromFirestore(orderId);
-        return;
-      }
-
-      // Preencher interface
-      document.getElementById('orderNumber').textContent = orderId.slice(-8).toUpperCase();
-      document.getElementById('orderTotal').textContent = currency(pixData.amount);
-      document.getElementById('pixCode').textContent = pixData.pixCode;
-
-      // Iniciar timer
-      startPaymentTimer();
-      
-      // Iniciar verificação de status
-      startStatusCheck();
+      // Sempre carregar do Firestore para garantir dados atualizados
+      loadOrderFromFirestore(orderId);
     }
 
     // Copiar código PIX

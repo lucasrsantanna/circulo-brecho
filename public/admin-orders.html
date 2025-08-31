@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - Gestão de Pedidos - Circulô Brechó</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/styles.css">
+  
+  <style>
+    body {
+      background: #f5f6fa;
+    }
+    
+    .admin-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .admin-header {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e8dec9;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e8dec9;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--brand-dark);
+      margin-bottom: 8px;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .orders-section {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e8dec9;
+      overflow: hidden;
+    }
+    
+    .section-header {
+      padding: 24px;
+      border-bottom: 1px solid #e8dec9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid #e8dec9;
+      border-radius: 8px;
+      background: white;
+    }
+    
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .orders-table th {
+      background: #f6efdf;
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--brand-dark);
+      border-bottom: 1px solid #e8dec9;
+    }
+    
+    .orders-table td {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+    
+    .orders-table tr:hover {
+      background: #fafafa;
+    }
+    
+    .order-id {
+      font-family: monospace;
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+    
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-confirmed {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .status-shipped {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-delivered {
+      background: #e2e3e5;
+      color: #383d41;
+    }
+    
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .customer-info {
+      font-size: 14px;
+    }
+    
+    .customer-name {
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+    
+    .customer-contact {
+      color: #666;
+      margin-top: 4px;
+    }
+    
+    .order-items {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+    
+    .btn-update {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-update:hover {
+      background: #138496;
+    }
+    
+    .btn-email {
+      background: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-email:hover {
+      background: #218838;
+    }
+    
+    .btn-whatsapp {
+      background: #25d366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-whatsapp:hover {
+      background: #1ebe57;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      margin: 5% auto;
+      padding: 24px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e8dec9;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-container {
+        padding: 16px;
+      }
+      
+      .orders-table {
+        font-size: 14px;
+      }
+      
+      .orders-table th,
+      .orders-table td {
+        padding: 12px 8px;
+      }
+      
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/public/index.html">
+        <img src="/public/assets/logo.png" alt="Circulô Brechó logo" />
+        <div>
+          <div class="title">circulô</div>
+          <div class="subtitle">brechó feminino</div>
+        </div>
+      </a>
+      <nav class="nav">
+        <a href="/public/index.html">Loja</a>
+        <a href="/public/admin-orders.html" style="color: var(--brand-dark); font-weight: 600;">Pedidos</a>
+        <a href="/admin/index.html">Produtos</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1 style="margin: 0; color: var(--brand-dark);">📦 Gestão de Pedidos</h1>
+      <p style="margin: 8px 0 0; color: #666;">Acompanhe e gerencie todos os pedidos da loja</p>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalOrders">0</div>
+        <div class="stat-label">Total de Pedidos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingOrders">0</div>
+        <div class="stat-label">Pendentes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="confirmedOrders">0</div>
+        <div class="stat-label">Confirmados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalRevenue">R$ 0</div>
+        <div class="stat-label">Faturamento</div>
+      </div>
+    </div>
+
+    <div class="orders-section">
+      <div class="section-header">
+        <h2 style="margin: 0;">Pedidos Recentes</h2>
+        <div class="filters">
+          <select id="statusFilter" class="filter-select">
+            <option value="all">Todos os Status</option>
+            <option value="pending">Pendente</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="shipped">Enviado</option>
+            <option value="delivered">Entregue</option>
+            <option value="cancelled">Cancelado</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="loadOrders()">🔄 Atualizar</button>
+        </div>
+      </div>
+
+      <div id="ordersContainer">
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <h3>Carregando pedidos...</h3>
+          <p>Por favor, aguarde enquanto buscamos os pedidos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Atualização de Status -->
+  <div id="statusModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="margin: 0;">Atualizar Status do Pedido</h3>
+        <button class="modal-close" onclick="closeStatusModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Pedido: <strong id="modalOrderId">#XXXXXX</strong></p>
+        <div class="form-group">
+          <label class="form-label" for="newStatus">Novo Status</label>
+          <select id="newStatus" class="form-input">
+            <option value="pending">Pendente</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="shipped">Enviado</option>
+            <option value="delivered">Entregue</option>
+            <option value="cancelled">Cancelado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="shippingCode">Código de Rastreio (opcional)</label>
+          <input type="text" id="shippingCode" class="form-input" placeholder="BR123456789BR">
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+          <button class="btn btn-outline" onclick="closeStatusModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="updateOrderStatus()">Atualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <!-- Configurações -->
+  <script src="/config.js"></script>
+  
+  <!-- Serviço de Emails -->
+  <script src="/public/email-service.js"></script>
+  
+  <script>
+    // Inicialização
+    let app, db;
+    let orders = [];
+    let currentEditingOrderId = null;
+
+    // Inicializar Firebase
+    function initializeFirebase() {
+      try {
+        app = firebase.initializeApp(window.CONFIG.FIREBASE_CONFIG);
+        db = firebase.firestore();
+      } catch (error) {
+        console.error('Erro ao inicializar Firebase:', error);
+      }
+    }
+
+    // Função utilitária para formatação de moeda
+    function currency(v) { 
+      return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); 
+    }
+
+    // Carregar pedidos do Firestore
+    async function loadOrders() {
+      try {
+        const statusFilter = document.getElementById('statusFilter').value;
+        let query = db.collection('orders').orderBy('createdAt', 'desc').limit(50);
+        
+        if (statusFilter !== 'all') {
+          query = query.where('status', '==', statusFilter);
+        }
+        
+        const snapshot = await query.get();
+        orders = [];
+        
+        snapshot.forEach(doc => {
+          orders.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        
+        renderOrders();
+        updateStats();
+        
+      } catch (error) {
+        console.error('Erro ao carregar pedidos:', error);
+        showError('Erro ao carregar pedidos: ' + error.message);
+      }
+    }
+
+    // Renderizar tabela de pedidos
+    function renderOrders() {
+      const container = document.getElementById('ordersContainer');
+      
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>Nenhum pedido encontrado</h3>
+            <p>Não há pedidos com os filtros selecionados.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const tableHTML = `
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Itens</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orders.map(order => `
+              <tr>
+                <td>
+                  <div class="order-id">#${order.id.slice(-8).toUpperCase()}</div>
+                  <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                    ${order.trackingNumber || 'CB' + order.id.slice(-8)}
+                  </div>
+                </td>
+                <td>
+                  <div class="customer-info">
+                    <div class="customer-name">${order.customer.name}</div>
+                    <div class="customer-contact">${order.customer.email}</div>
+                    <div class="customer-contact">${order.customer.phone}</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="order-items">
+                    ${order.items.slice(0, 2).map(item => `${item.name} (${item.size})`).join('<br>')}
+                    ${order.items.length > 2 ? `<br>+${order.items.length - 2} mais` : ''}
+                  </div>
+                </td>
+                <td>
+                  <strong>${currency(order.payment.total)}</strong>
+                  <div style="font-size: 12px; color: #666;">
+                    ${order.payment.method === 'pix' ? 'PIX' : 'Cartão'}
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge status-${order.status}">
+                    ${getStatusLabel(order.status)}
+                  </span>
+                </td>
+                <td>
+                  <div style="font-size: 14px;">
+                    ${order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('pt-BR') : 'N/A'}
+                  </div>
+                  <div style="font-size: 12px; color: #666;">
+                    ${order.createdAt ? new Date(order.createdAt.toDate()).toLocaleTimeString('pt-BR') : ''}
+                  </div>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button class="btn-sm btn-update" onclick="openStatusModal('${order.id}')">
+                      📝
+                    </button>
+                    <button class="btn-sm btn-email" onclick="sendOrderEmail('${order.id}')">
+                      📧
+                    </button>
+                    <a href="${getWhatsAppLink(order)}" class="btn-sm btn-whatsapp" target="_blank">
+                      💬
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = tableHTML;
+    }
+
+    // Atualizar estatísticas
+    function updateStats() {
+      const stats = {
+        total: orders.length,
+        pending: orders.filter(o => o.status === 'pending').length,
+        confirmed: orders.filter(o => o.status === 'confirmed').length,
+        revenue: orders.filter(o => o.payment.status === 'paid').reduce((sum, o) => sum + o.payment.total, 0)
+      };
+      
+      document.getElementById('totalOrders').textContent = stats.total;
+      document.getElementById('pendingOrders').textContent = stats.pending;
+      document.getElementById('confirmedOrders').textContent = stats.confirmed;
+      document.getElementById('totalRevenue').textContent = currency(stats.revenue);
+    }
+
+    // Obter label do status
+    function getStatusLabel(status) {
+      const labels = {
+        pending: 'Pendente',
+        confirmed: 'Confirmado',
+        shipped: 'Enviado',
+        delivered: 'Entregue',
+        cancelled: 'Cancelado'
+      };
+      return labels[status] || status;
+    }
+
+    // Gerar link do WhatsApp
+    function getWhatsAppLink(order) {
+      const phone = window.CONFIG?.WHATSAPP_PHONE || '5511914813028';
+      const message = `Olá! Sobre o pedido #${order.id.slice(-8).toUpperCase()} de ${order.customer.name}. Status atual: ${getStatusLabel(order.status)}`;
+      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+
+    // Abrir modal de status
+    function openStatusModal(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      
+      currentEditingOrderId = orderId;
+      document.getElementById('modalOrderId').textContent = '#' + orderId.slice(-8).toUpperCase();
+      document.getElementById('newStatus').value = order.status;
+      document.getElementById('shippingCode').value = order.shippingCode || '';
+      document.getElementById('statusModal').style.display = 'block';
+    }
+
+    // Fechar modal
+    function closeStatusModal() {
+      document.getElementById('statusModal').style.display = 'none';
+      currentEditingOrderId = null;
+    }
+
+    // Atualizar status do pedido
+    async function updateOrderStatus() {
+      if (!currentEditingOrderId) return;
+      
+      try {
+        const newStatus = document.getElementById('newStatus').value;
+        const shippingCode = document.getElementById('shippingCode').value.trim();
+        
+        const updateData = {
+          status: newStatus,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        if (shippingCode) {
+          updateData.shippingCode = shippingCode;
+        }
+        
+        await db.collection('orders').doc(currentEditingOrderId).update(updateData);
+        
+        // Enviar email baseado no novo status
+        const order = orders.find(o => o.id === currentEditingOrderId);
+        if (order && window.EmailService) {
+          order.status = newStatus;
+          order.shippingCode = shippingCode;
+          
+          switch (newStatus) {
+            case 'confirmed':
+              await window.EmailService.sendPaymentConfirmedEmail(order);
+              break;
+            case 'shipped':
+              await window.EmailService.sendOrderShippedEmail(order);
+              break;
+            case 'delivered':
+              await window.EmailService.sendOrderDeliveredEmail(order);
+              break;
+          }
+        }
+        
+        showSuccess('Status atualizado com sucesso!');
+        closeStatusModal();
+        loadOrders();
+        
+      } catch (error) {
+        console.error('Erro ao atualizar status:', error);
+        showError('Erro ao atualizar status: ' + error.message);
+      }
+    }
+
+    // Enviar email manualmente
+    async function sendOrderEmail(orderId) {
+      try {
+        const order = orders.find(o => o.id === orderId);
+        if (!order || !window.EmailService) return;
+        
+        // Determinar qual email enviar baseado no status
+        let emailSent = false;
+        switch (order.status) {
+          case 'pending':
+            emailSent = await window.EmailService.sendOrderConfirmationEmail(order);
+            break;
+          case 'confirmed':
+            emailSent = await window.EmailService.sendPaymentConfirmedEmail(order);
+            break;
+          case 'shipped':
+            emailSent = await window.EmailService.sendOrderShippedEmail(order);
+            break;
+          case 'delivered':
+            emailSent = await window.EmailService.sendOrderDeliveredEmail(order);
+            break;
+        }
+        
+        if (emailSent) {
+          showSuccess('Email enviado com sucesso!');
+        } else {
+          showError('Erro ao enviar email');
+        }
+        
+      } catch (error) {
+        console.error('Erro ao enviar email:', error);
+        showError('Erro ao enviar email: ' + error.message);
+      }
+    }
+
+    // Mostrar mensagens
+    function showSuccess(message) {
+      alert('✅ ' + message);
+    }
+
+    function showError(message) {
+      alert('❌ ' + message);
+    }
+
+    // Event listeners
+    document.getElementById('statusFilter').addEventListener('change', loadOrders);
+
+    // Fechar modal clicando fora
+    document.getElementById('statusModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeStatusModal();
+      }
+    });
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeFirebase();
+      loadOrders();
+    });
+  </script>
+</body>
+</html>

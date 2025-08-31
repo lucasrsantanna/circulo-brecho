@@ -227,13 +227,127 @@ function initializeCardForm() {
     return;
   }
 
-  // TODO: Implementar formulário de cartão do Mercado Pago
+  // Criar formulário de cartão do Mercado Pago
   document.getElementById('form-checkout').innerHTML = `
-    <div style="padding: 20px; border: 1px solid #e8dec9; border-radius: 12px; text-align: center;">
-      <p>⚠️ <strong>Formulário de cartão será implementado após configurar credenciais do Mercado Pago</strong></p>
-      <p>Por enquanto, selecione PIX para testar o sistema.</p>
+    <div class="card-form">
+      <div class="form-group">
+        <label class="form-label" for="cardNumber">Número do Cartão</label>
+        <input type="text" id="cardNumber" class="form-input" placeholder="0000 0000 0000 0000" data-checkout="cardNumber">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="cardExpirationDate">Validade</label>
+          <input type="text" id="cardExpirationDate" class="form-input" placeholder="MM/YY" data-checkout="cardExpirationDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="securityCode">CVV</label>
+          <input type="text" id="securityCode" class="form-input" placeholder="123" data-checkout="securityCode">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="cardholderName">Nome no Cartão</label>
+        <input type="text" id="cardholderName" class="form-input" placeholder="Como está no cartão" data-checkout="cardholderName">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="docType">Tipo de Documento</label>
+        <select id="docType" class="form-input" data-checkout="docType">
+          <option value="CPF">CPF</option>
+          <option value="CNPJ">CNPJ</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="docNumber">CPF</label>
+        <input type="text" id="docNumber" class="form-input" placeholder="000.000.000-00" data-checkout="docNumber">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="installments">Parcelamento</label>
+        <select id="installments" class="form-input" disabled>
+          <option>Calculando parcelas...</option>
+        </select>
+      </div>
+      
+      <div id="cardErrors" class="form-errors" style="color: #dc3545; margin-top: 16px; display: none;"></div>
     </div>
   `;
+  
+  // Aplicar máscaras
+  applyCardMasks();
+  
+  // Buscar opções de parcelamento
+  getInstallments();
+}
+
+// Aplicar máscaras nos campos do cartão
+function applyCardMasks() {
+  // Máscara para número do cartão
+  document.getElementById('cardNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    value = value.replace(/(\d{4})/g, '$1 ').trim();
+    if (value.length > 19) value = value.substring(0, 19);
+    e.target.value = value;
+  });
+
+  // Máscara para data de expiração
+  document.getElementById('cardExpirationDate').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+  });
+
+  // Máscara para CVV
+  document.getElementById('securityCode').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    e.target.value = value.substring(0, 4);
+  });
+
+  // Máscara para CPF
+  document.getElementById('docNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    e.target.value = value;
+  });
+}
+
+// Buscar opções de parcelamento
+async function getInstallments() {
+  try {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    
+    // Para teste, vamos criar opções de parcelamento simuladas
+    // Em produção, isso viria da API do Mercado Pago
+    const installments = [
+      { installments: 1, installment_amount: subtotal, total_amount: subtotal },
+      { installments: 2, installment_amount: subtotal / 2, total_amount: subtotal },
+      { installments: 3, installment_amount: subtotal / 3, total_amount: subtotal * 1.05 },
+      { installments: 6, installment_amount: subtotal / 6, total_amount: subtotal * 1.10 },
+      { installments: 12, installment_amount: subtotal / 12, total_amount: subtotal * 1.20 }
+    ];
+    
+    const installmentsSelect = document.getElementById('installments');
+    installmentsSelect.innerHTML = installments.map(option => `
+      <option value="${option.installments}">
+        ${option.installments}x de ${currency(option.installment_amount)}
+        ${option.installments > 1 ? ` (Total: ${currency(option.total_amount)})` : ''}
+      </option>
+    `).join('');
+    
+    installmentsSelect.disabled = false;
+    
+  } catch (error) {
+    console.error('Erro ao buscar parcelamento:', error);
+    document.getElementById('installments').innerHTML = '<option value="1">1x sem juros</option>';
+  }
 }
 
 // Finalizar pedido
@@ -279,6 +393,18 @@ async function finalizeOrder() {
     // Salvar no Firestore
     const orderRef = await db.collection('orders').add(orderData);
     const orderId = orderRef.id;
+    
+    // Adicionar ID ao orderData para uso no email
+    orderData.id = orderId;
+    
+    // Enviar email de confirmação
+    try {
+      if (typeof window.EmailService !== 'undefined') {
+        await window.EmailService.sendOrderConfirmationEmail(orderData);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar email de confirmação:', error);
+    }
 
     showLoading(true, 'Processando pagamento...');
 
@@ -379,11 +505,164 @@ async function processPIXPayment(orderId, amount) {
 // Processar pagamento com cartão
 async function processCardPayment(orderId, amount) {
   try {
-    // TODO: Implementar integração real com Mercado Pago
-    showError('Pagamento com cartão será implementado após configurar credenciais do Mercado Pago. Use PIX por enquanto.');
+    showLoading(true, 'Processando pagamento com cartão...');
+    
+    // Validar dados do cartão
+    if (!validateCardData()) {
+      showLoading(false);
+      return;
+    }
+    
+    // Obter token do cartão
+    const cardToken = await createCardToken();
+    if (!cardToken) {
+      showLoading(false);
+      return;
+    }
+    
+    // Criar pagamento
+    const paymentData = {
+      token: cardToken.id,
+      installments: parseInt(document.getElementById('installments').value),
+      payment_method_id: cardToken.payment_method_id,
+      payer: {
+        email: customerData.email,
+        identification: {
+          type: document.getElementById('docType').value,
+          number: document.getElementById('docNumber').value.replace(/\D/g, '')
+        }
+      },
+      transaction_amount: amount,
+      description: `Pedido Circulô Brechó #${orderId.slice(-8).toUpperCase()}`,
+      external_reference: orderId,
+      metadata: {
+        order_id: orderId,
+        customer_email: customerData.email
+      }
+    };
+    
+    // Simular processamento (em produção seria uma chamada real para a API)
+    console.log('Dados do pagamento:', paymentData);
+    
+    // Simular resposta de sucesso após 2 segundos
+    setTimeout(async () => {
+      // Atualizar pedido no Firestore como pago
+      await updateOrderPaymentStatus(orderId, 'paid', 'card');
+      
+      // Enviar email de pagamento confirmado
+      try {
+        if (typeof window.EmailService !== 'undefined') {
+          const orderDoc = await db.collection('orders').doc(orderId).get();
+          if (orderDoc.exists) {
+            const orderData = orderDoc.data();
+            orderData.id = orderId;
+            await window.EmailService.sendPaymentConfirmedEmail(orderData);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao enviar email de pagamento confirmado:', error);
+      }
+      
+      // Limpar carrinho
+      localStorage.removeItem('cart');
+      
+      // Redirecionar para página de sucesso
+      window.location.href = `/public/order-success.html?order=${orderId}`;
+    }, 2000);
+    
   } catch (error) {
     console.error('Erro ao processar cartão:', error);
-    showError('Erro ao processar cartão. Tente novamente.');
+    showError('Erro ao processar cartão: ' + error.message);
+    showLoading(false);
+  }
+}
+
+// Validar dados do cartão
+function validateCardData() {
+  const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+  const expirationDate = document.getElementById('cardExpirationDate').value;
+  const securityCode = document.getElementById('securityCode').value;
+  const cardholderName = document.getElementById('cardholderName').value;
+  const docNumber = document.getElementById('docNumber').value;
+  
+  if (!cardNumber || cardNumber.length < 13) {
+    showError('Número do cartão inválido');
+    document.getElementById('cardNumber').focus();
+    return false;
+  }
+  
+  if (!expirationDate || expirationDate.length !== 5) {
+    showError('Data de expiração inválida');
+    document.getElementById('cardExpirationDate').focus();
+    return false;
+  }
+  
+  if (!securityCode || securityCode.length < 3) {
+    showError('CVV inválido');
+    document.getElementById('securityCode').focus();
+    return false;
+  }
+  
+  if (!cardholderName.trim()) {
+    showError('Nome do portador é obrigatório');
+    document.getElementById('cardholderName').focus();
+    return false;
+  }
+  
+  if (!docNumber || docNumber.replace(/\D/g, '').length !== 11) {
+    showError('CPF inválido');
+    document.getElementById('docNumber').focus();
+    return false;
+  }
+  
+  return true;
+}
+
+// Criar token do cartão
+async function createCardToken() {
+  try {
+    // Para teste, vamos simular a criação do token
+    // Em produção, isso usaria mercadopago.createCardToken()
+    
+    const cardData = {
+      cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, ''),
+      cardExpirationMonth: document.getElementById('cardExpirationDate').value.split('/')[0],
+      cardExpirationYear: '20' + document.getElementById('cardExpirationDate').value.split('/')[1],
+      securityCode: document.getElementById('securityCode').value,
+      cardholderName: document.getElementById('cardholderName').value
+    };
+    
+    console.log('Criando token para:', cardData);
+    
+    // Simular token de resposta
+    const mockToken = {
+      id: 'card_token_' + Date.now(),
+      payment_method_id: 'visa', // Seria detectado automaticamente
+      card_number_length: cardData.cardNumber.length,
+      security_code_length: cardData.securityCode.length
+    };
+    
+    return mockToken;
+    
+  } catch (error) {
+    console.error('Erro ao criar token:', error);
+    showError('Erro ao processar dados do cartão');
+    return null;
+  }
+}
+
+// Atualizar status do pagamento no Firestore
+async function updateOrderPaymentStatus(orderId, status, method) {
+  try {
+    await db.collection('orders').doc(orderId).update({
+      'payment.status': status,
+      'payment.method': method,
+      'payment.paidAt': firebase.firestore.FieldValue.serverTimestamp(),
+      'updatedAt': firebase.firestore.FieldValue.serverTimestamp(),
+      'status': status === 'paid' ? 'confirmed' : 'pending'
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error);
   }
 }
 
