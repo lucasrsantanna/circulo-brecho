@@ -60,13 +60,16 @@ const CONFIG = {
   API_BASE_URL: '', // Será preenchido quando configurarmos as Cloud Functions
   
   // === MERCADO PAGO ===
-  // IMPORTANTE: Estas são credenciais de TESTE (sandbox)
-  // Substitua pelas credenciais de PRODUÇÃO quando for ao ar
+  // CREDENCIAIS DE PRODUÇÃO - ATIVAS! ✅
   MERCADO_PAGO: {
-    // Credenciais de teste - CONFIGURADAS E ATIVAS! ✅
-    PUBLIC_KEY: 'TEST-76ca8bde-d9bb-445a-976c-9eb0fa27b45e',
-    ACCESS_TOKEN: 'TEST-7584358912448345-082823-acfe38e8815ca202145c3f47334d1c35-43481797',
-    SANDBOX: true // true = teste, false = produção
+    // Credenciais de produção
+    PUBLIC_KEY: 'APP_USR-9796b444-3966-4e17-9dd2-724582171c1d',
+    ACCESS_TOKEN: 'APP_USR-7584358912448345-082823-393cc8c4376525c171c7ee3c75967b22-43481797',
+    SANDBOX: false, // false = PRODUÇÃO ATIVA
+    
+    // Credenciais de teste (backup para desenvolvimento)
+    TEST_PUBLIC_KEY: 'TEST-76ca8bde-d9bb-445a-976c-9eb0fa27b45e',
+    TEST_ACCESS_TOKEN: 'TEST-7584358912448345-082823-acfe38e8815ca202145c3f47334d1c35-43481797'
   },
   
   // === CONFIGURAÇÕES DE EMAIL ===
