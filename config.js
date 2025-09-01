@@ -78,6 +78,18 @@ const CONFIG = {
     FROM_EMAIL: 'noreply@circulobrecho.com',
     REPLY_TO: 'contato@circulobrecho.com'
   },
+
+  // === EMAILJS CONFIGURATION ===
+  EMAILJS: {
+    SERVICE_ID: 'service_3dsr6pm',
+    PUBLIC_KEY: 'LeEQHGDEY8wXfn_Uw',
+    TEMPLATE_IDS: {
+      ORDER_CONFIRMATION: 'template_order_confirmation',
+      PAYMENT_CONFIRMED: 'template_payment_confirmed', 
+      ORDER_SHIPPED: 'template_order_shipped',
+      ORDER_DELIVERED: 'template_order_delivered'
+    }
+  },
   
   // === STATUS DOS PEDIDOS ===
   ORDER_STATUS: {

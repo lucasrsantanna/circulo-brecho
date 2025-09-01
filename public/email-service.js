@@ -203,26 +203,83 @@ async function sendOrderEmail(orderData, emailType) {
       return false;
     }
 
+    // Verificar se EmailJS está disponível
+    if (typeof emailjs === 'undefined') {
+      console.error('EmailJS não carregado');
+      return false;
+    }
+
     // Preparar dados para o template
     const emailData = prepareEmailData(orderData, template);
     
-    // Para demonstração, vamos apenas logar o email
-    // Em produção, aqui seria integrado com EmailJS, SendGrid, etc.
-    console.log('📧 Enviando email:', {
+    console.log('📧 Enviando email real via EmailJS:', {
       to: orderData.customer.email,
       subject: emailData.subject,
       type: emailType,
-      orderNumber: orderData.orderNumber
+      orderNumber: orderData.id?.slice(-8).toUpperCase() || 'UNKNOWN'
     });
-    
-    console.log('Email HTML:', emailData.html);
-    
-    // Simular envio bem-sucedido
-    return true;
+
+    // Preparar dados para o EmailJS
+    const templateParams = {
+      to_email: orderData.customer.email,
+      to_name: orderData.customer.name,
+      subject: emailData.subject,
+      order_number: orderData.id?.slice(-8).toUpperCase() || 'UNKNOWN',
+      order_total: currency(orderData.payment?.total || 0),
+      customer_name: orderData.customer?.name || 'Cliente',
+      tracking_number: orderData.trackingNumber || `CB${orderData.id?.slice(-8) || '12345678'}`,
+      order_date: orderData.createdAt?.toDate?.()?.toLocaleDateString('pt-BR') || new Date().toLocaleDateString('pt-BR'),
+      payment_method: orderData.payment?.method === 'pix' ? 'PIX' : 'Cartão de Crédito',
+      whatsapp_phone: window.CONFIG?.WHATSAPP_PHONE || '5511914813028',
+      store_link: window.location.origin + '/public/index.html',
+      message_html: emailData.html
+    };
+
+    // Tentar enviar via EmailJS
+    const response = await emailjs.send(
+      window.CONFIG.EMAILJS.SERVICE_ID,
+      getTemplateId(emailType),
+      templateParams,
+      window.CONFIG.EMAILJS.PUBLIC_KEY
+    );
+
+    if (response.status === 200) {
+      console.log('✅ Email enviado com sucesso:', response);
+      return true;
+    } else {
+      console.error('❌ Falha no envio:', response);
+      return false;
+    }
     
   } catch (error) {
     console.error('Erro ao enviar email:', error);
+    
+    // Fallback: pelo menos logar o email
+    console.log('📧 EMAIL FALLBACK - Dados que seriam enviados:', {
+      to: orderData.customer.email,
+      subject: prepareEmailData(orderData, EMAIL_TEMPLATES[emailType]).subject,
+      html: prepareEmailData(orderData, EMAIL_TEMPLATES[emailType]).html
+    });
+    
     return false;
+  }
+}
+
+// Obter template ID baseado no tipo de email
+function getTemplateId(emailType) {
+  const templateIds = window.CONFIG.EMAILJS.TEMPLATE_IDS;
+  
+  switch(emailType) {
+    case 'ORDER_CONFIRMATION':
+      return templateIds.ORDER_CONFIRMATION;
+    case 'PAYMENT_CONFIRMED': 
+      return templateIds.PAYMENT_CONFIRMED;
+    case 'ORDER_SHIPPED':
+      return templateIds.ORDER_SHIPPED;
+    case 'ORDER_DELIVERED':
+      return templateIds.ORDER_DELIVERED;
+    default:
+      return templateIds.ORDER_CONFIRMATION;
   }
 }
 

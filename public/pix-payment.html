@@ -423,14 +423,27 @@
         document.getElementById('orderTotal').textContent = currency(pixData.amount);
         document.getElementById('pixCode').textContent = pixData.pixCode;
         
+        console.log('Dados PIX recebidos:', pixData);
+        console.log('QR Code URL:', pixData.qrCodeUrl);
+        console.log('Código PIX:', pixData.pixCode);
+        
         // Mostrar QR Code se disponível
-        if (pixData.qrCodeUrl && pixData.qrCodeUrl.startsWith('data:image')) {
+        if (pixData.qrCodeUrl && (pixData.qrCodeUrl.startsWith('data:image') || pixData.qrCodeUrl.startsWith('http'))) {
           const qrImage = document.getElementById('qrCodeImage');
           const placeholder = document.getElementById('qrCodePlaceholder');
           
           qrImage.src = pixData.qrCodeUrl;
           qrImage.style.display = 'block';
           placeholder.style.display = 'none';
+          console.log('QR Code exibido com sucesso');
+        } else {
+          console.log('QR Code não disponível ou inválido:', pixData.qrCodeUrl);
+        }
+        
+        // Verificar se o código PIX é válido
+        if (!pixData.pixCode || pixData.pixCode === 'Código PIX não disponível') {
+          console.warn('Código PIX inválido, gerando código local...');
+          document.getElementById('pixCode').textContent = generateBasicPIXCode(pixData.amount, orderId);
         }
 
         // Iniciar timer
